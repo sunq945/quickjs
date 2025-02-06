@@ -45,12 +45,16 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar -czf quickjs-esp32s3-static-library.tar.gz libquickjs.a
         echo "Static library created"
-
+    - name: Set Git user
+      run: |
+        git config --global user.email "sqshining8964@gmail.com"
+        git config --global user.name "sunq945"
+        
     - name: Create Git tag
       run: |
         git tag -a v1.0.0 -m "Release v1.0.0"
         git push origin v1.0.0
-
+        
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
