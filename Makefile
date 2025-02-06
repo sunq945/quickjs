@@ -230,10 +230,7 @@ all: $(OBJDIR) $(OBJDIR)/quickjs.check.o $(OBJDIR)/qjs.check.o $(PROGS)
 
 QJS_LIB_OBJS=$(OBJDIR)/quickjs.o $(OBJDIR)/libregexp.o $(OBJDIR)/libunicode.o $(OBJDIR)/cutils.o $(OBJDIR)/quickjs-libc.o $(OBJDIR)/libbf.o
 
-QJS_OBJS=$(OBJDIR)/qjs.o $(OBJDIR)/repl.o $(QJS_LIB_OBJS)
-ifdef CONFIG_BIGNUM
-QJS_OBJS+=$(OBJDIR)/qjscalc.o
-endif
+QJS_OBJS=$(OBJDIR)/qjs.o $(QJS_LIB_OBJS)
 
 HOST_LIBS=-lm -ldl -lpthread
 LIBS=-lm
@@ -298,15 +295,6 @@ $(OBJDIR)/libunicode.o $(OBJDIR)/libunicode.m32.o $(OBJDIR)/libunicode.m32s.o \
 libunicode-table.h: unicode_gen
 	./unicode_gen unicode $@
 endif
-
-run-test262: $(OBJDIR)/run-test262.o $(QJS_LIB_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-run-test262-debug: $(patsubst %.o, %.debug.o, $(OBJDIR)/run-test262.o $(QJS_LIB_OBJS))
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-run-test262-32: $(patsubst %.o, %.m32.o, $(OBJDIR)/run-test262.o $(QJS_LIB_OBJS))
-	$(CC) -m32 $(LDFLAGS) -o $@ $^ $(LIBS)
 
 # object suffix order: nolto, [m32|m32s]
 
