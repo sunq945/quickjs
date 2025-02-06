@@ -52,9 +52,14 @@ jobs:
            
     - name: Create Git tag
       run: |
-        #git tag -a v1.0.0 -m "Release v1.0.0"
+        git tag -a v1.0.0 -m "Release v1.0.0"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        git push origin v1.0.0  # 推送标签到远程仓库
+
+    - name: Wait for 3 minutes
+      run: sleep 180  # 等待 180 秒 (3 分钟)
+    
+    - name: Push tag to remote
+      run: git push origin v1.0.0
 
     - name: Fetch tags
       run: git fetch --tags
