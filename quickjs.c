@@ -43368,49 +43368,14 @@ static const JSCFunctionListEntry js_math_obj[] = {
 };
 
 /* Date */
-
+int timezone_offset = 0 ;
 /* OS dependent. d = argv[0] is in ms from 1970. Return the difference
    between UTC time and local time 'd' in minutes */
-static int getTimezoneOffset(int64_t time)
-{
-    time_t ti;
-    int res;
-
-    time /= 1000; /* convert to seconds */
-    if (sizeof(time_t) == 4) {
-        /* on 32-bit systems, we need to clamp the time value to the
-           range of `time_t`. This is better than truncating values to
-           32 bits and hopefully provides the same result as 64-bit
-           implementation of localtime_r.
-         */
-        if ((time_t)-1 < 0) {
-            if (time < INT32_MIN) {
-                time = INT32_MIN;
-            } else if (time > INT32_MAX) {
-                time = INT32_MAX;
-            }
-        } else {
-            if (time < 0) {
-                time = 0;
-            } else if (time > UINT32_MAX) {
-                time = UINT32_MAX;
-            }
-        }
-    }
-    ti = time;
+static int getTimezoneOffset(int64_t time) {
+    return timezone_offset ;
 #if defined(_WIN32)
-    {
-        struct tm *tm;
-        time_t gm_ti, loc_ti;
-
-        tm = gmtime(&ti);
-        gm_ti = mktime(tm);
-
-        tm = localtime(&ti);
-        loc_ti = mktime(tm);
-
-        res = (gm_ti - loc_ti) / 60;
-    }
+    /* XXX: TODO */
+    return 0;
 #else
     {
         struct tm tm;
