@@ -192,18 +192,6 @@ CONFIG_SHARED_LIBS=y # building shared libraries is supported
 endif
 endif
 
-PROGS=qjs$(EXE) qjsc$(EXE) run-test262
-ifneq ($(CROSS_PREFIX),)
-QJSC_CC=gcc
-QJSC=./host-qjsc
-PROGS+=$(QJSC)
-else
-QJSC_CC=$(CC)
-QJSC=./qjsc$(EXE)
-endif
-ifndef CONFIG_WIN32
-PROGS+=qjscalc
-endif
 ifdef CONFIG_M32
 PROGS+=qjs32 qjs32_s
 endif
