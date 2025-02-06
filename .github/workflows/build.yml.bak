@@ -1,0 +1,55 @@
+name: Build ESP32-S3 QuickJS Static Library
+
+on:
+  pull_request:
+    paths:
+      - '**'
+      - '!.gitignore'
+      - '!LICENSE'
+      - '!TODO'
+      - '!doc/**'
+      - '!examples/**'
+      - '.github/workflows/build.yml'
+  push:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用 Ubuntu 系统来运行构建
+
+    steps:
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+        mkdir -p ~/esp
+        cd ~/esp
+        git clone -b v5.4 --recursive https://github.com/espressif/esp-idf.git
+        cd ~/esp/esp-idf
+        ./install.sh esp32s3
+        . $HOME/esp/esp-idf/export.sh
+        alias get_idf='. $HOME/esp/esp-idf/export.sh'
+        source ~/.bashrc
+        echo ${IDF_PATH}
+        
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Build
+      run: |
+          export CROSS_PREFIX=${IDF_PATH}/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32-elf-
+          export __STDC_NO_ATOMICS__=1
+          make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y CONFIG_UBSAN=y
+    - name: Package static library
+      run: |
+        cd ${GITHUB_WORKSPACE}/build
+        tar -czf quickjs-esp32s3-static-library.tar.gz libquickjs.a
+        echo "Static library created"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: quickjs-esp32s3-static-library.tar.gz # 指定需要发布的文件
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub token 来创建 release
