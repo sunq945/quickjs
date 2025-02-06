@@ -5,8 +5,6 @@ on:
     paths:
       - '.github/workflows/build.yml'
   push:
-    branches:
-      - '*'
   workflow_dispatch:
     inputs:
       tag_date:
@@ -54,14 +52,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar -czf quickjs-esp32s3-static-library.tar.gz libquickjs.a
         echo "Static library created"
-    - name: Set Git user
-      run: |
-        git config --global user.email "sqshining8964@gmail.com"
-        git config user.name "sunq945"
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
-          WITH_V: false
-          
+         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1    
       with:
