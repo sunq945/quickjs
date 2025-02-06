@@ -45,7 +45,7 @@
 //#include <dlfcn.h>
 
 #include "termios.h"
-#include <sys/types.h>
+#include <sys/select.h>
 //#include <sys/ioctl.h>
 #include <sys/wait.h>
 
@@ -1946,52 +1946,52 @@ static void os_signal_handler(int sig_num)
 typedef void (*sighandler_t)(int sig_num);
 #endif
 
-static JSValue js_os_signal(JSContext *ctx, JSValueConst this_val,
-                            int argc, JSValueConst *argv)
-{
-    JSRuntime *rt = JS_GetRuntime(ctx);
-    JSThreadState *ts = JS_GetRuntimeOpaque(rt);
-    JSOSSignalHandler *sh;
-    uint32_t sig_num;
-    JSValueConst func;
-    sighandler_t handler;
+// static JSValue js_os_signal(JSContext *ctx, JSValueConst this_val,
+//                             int argc, JSValueConst *argv)
+// {
+//     JSRuntime *rt = JS_GetRuntime(ctx);
+//     JSThreadState *ts = JS_GetRuntimeOpaque(rt);
+//     JSOSSignalHandler *sh;
+//     uint32_t sig_num;
+//     JSValueConst func;
+//     sighandler_t handler;
 
-    if (!is_main_thread(rt))
-        return JS_ThrowTypeError(ctx, "signal handler can only be set in the main thread");
+//     if (!is_main_thread(rt))
+//         return JS_ThrowTypeError(ctx, "signal handler can only be set in the main thread");
 
-    if (JS_ToUint32(ctx, &sig_num, argv[0]))
-        return JS_EXCEPTION;
-    if (sig_num >= 64)
-        return JS_ThrowRangeError(ctx, "invalid signal number");
-    func = argv[1];
-    /* func = null: SIG_DFL, func = undefined, SIG_IGN */
-    if (JS_IsNull(func) || JS_IsUndefined(func)) {
-        sh = find_sh(ts, sig_num);
-        if (sh) {
-            free_sh(JS_GetRuntime(ctx), sh);
-        }
-        if (JS_IsNull(func))
-            handler = SIG_DFL;
-        else
-            handler = SIG_IGN;
-        signal(sig_num, handler);
-    } else {
-        if (!JS_IsFunction(ctx, func))
-            return JS_ThrowTypeError(ctx, "not a function");
-        sh = find_sh(ts, sig_num);
-        if (!sh) {
-            sh = js_mallocz(ctx, sizeof(*sh));
-            if (!sh)
-                return JS_EXCEPTION;
-            sh->sig_num = sig_num;
-            list_add_tail(&sh->link, &ts->os_signal_handlers);
-        }
-        JS_FreeValue(ctx, sh->func);
-        sh->func = JS_DupValue(ctx, func);
-        signal(sig_num, os_signal_handler);
-    }
-    return JS_UNDEFINED;
-}
+//     if (JS_ToUint32(ctx, &sig_num, argv[0]))
+//         return JS_EXCEPTION;
+//     if (sig_num >= 64)
+//         return JS_ThrowRangeError(ctx, "invalid signal number");
+//     func = argv[1];
+//     /* func = null: SIG_DFL, func = undefined, SIG_IGN */
+//     if (JS_IsNull(func) || JS_IsUndefined(func)) {
+//         sh = find_sh(ts, sig_num);
+//         if (sh) {
+//             free_sh(JS_GetRuntime(ctx), sh);
+//         }
+//         if (JS_IsNull(func))
+//             handler = SIG_DFL;
+//         else
+//             handler = SIG_IGN;
+//         signal(sig_num, handler);
+//     } else {
+//         if (!JS_IsFunction(ctx, func))
+//             return JS_ThrowTypeError(ctx, "not a function");
+//         sh = find_sh(ts, sig_num);
+//         if (!sh) {
+//             sh = js_mallocz(ctx, sizeof(*sh));
+//             if (!sh)
+//                 return JS_EXCEPTION;
+//             sh->sig_num = sig_num;
+//             list_add_tail(&sh->link, &ts->os_signal_handlers);
+//         }
+//         JS_FreeValue(ctx, sh->func);
+//         sh->func = JS_DupValue(ctx, func);
+//         signal(sig_num, os_signal_handler);
+//     }
+//     return JS_UNDEFINED;
+// }
 
 #if defined(__linux__) || defined(__APPLE__)
 static int64_t get_time_ms(void)
@@ -3695,7 +3695,7 @@ static const JSCFunctionListEntry js_os_funcs[] = {
     JS_CFUNC_DEF("rename", 2, js_os_rename ),
     JS_CFUNC_MAGIC_DEF("setReadHandler", 2, js_os_setReadHandler, 0 ),
     JS_CFUNC_MAGIC_DEF("setWriteHandler", 2, js_os_setReadHandler, 1 ),
-    JS_CFUNC_DEF("signal", 2, js_os_signal ),
+    //JS_CFUNC_DEF("signal", 2, js_os_signal ),
     OS_FLAG(SIGINT),
     OS_FLAG(SIGABRT),
     OS_FLAG(SIGFPE),
