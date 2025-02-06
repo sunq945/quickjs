@@ -42,7 +42,7 @@
 #include <conio.h>
 #include <utime.h>
 #else
-#include <dlfcn.h>
+//#include <dlfcn.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
@@ -474,54 +474,54 @@ static JSModuleDef *js_module_loader_so(JSContext *ctx,
     return NULL;
 }
 #else
-static JSModuleDef *js_module_loader_so(JSContext *ctx,
-                                        const char *module_name)
-{
-    JSModuleDef *m;
-    void *hd;
-    JSInitModuleFunc *init;
-    char *filename;
+// static JSModuleDef *js_module_loader_so(JSContext *ctx,
+//                                         const char *module_name)
+// {
+//     JSModuleDef *m;
+//     void *hd;
+//     JSInitModuleFunc *init;
+//     char *filename;
 
-    if (!strchr(module_name, '/')) {
-        /* must add a '/' so that the DLL is not searched in the
-           system library paths */
-        filename = js_malloc(ctx, strlen(module_name) + 2 + 1);
-        if (!filename)
-            return NULL;
-        strcpy(filename, "./");
-        strcpy(filename + 2, module_name);
-    } else {
-        filename = (char *)module_name;
-    }
+//     if (!strchr(module_name, '/')) {
+//         /* must add a '/' so that the DLL is not searched in the
+//            system library paths */
+//         filename = js_malloc(ctx, strlen(module_name) + 2 + 1);
+//         if (!filename)
+//             return NULL;
+//         strcpy(filename, "./");
+//         strcpy(filename + 2, module_name);
+//     } else {
+//         filename = (char *)module_name;
+//     }
 
-    /* C module */
-    hd = dlopen(filename, RTLD_NOW | RTLD_LOCAL);
-    if (filename != module_name)
-        js_free(ctx, filename);
-    if (!hd) {
-        JS_ThrowReferenceError(ctx, "could not load module filename '%s' as shared library",
-                               module_name);
-        goto fail;
-    }
+//     /* C module */
+//     hd = dlopen(filename, RTLD_NOW | RTLD_LOCAL);
+//     if (filename != module_name)
+//         js_free(ctx, filename);
+//     if (!hd) {
+//         JS_ThrowReferenceError(ctx, "could not load module filename '%s' as shared library",
+//                                module_name);
+//         goto fail;
+//     }
 
-    init = dlsym(hd, "js_init_module");
-    if (!init) {
-        JS_ThrowReferenceError(ctx, "could not load module filename '%s': js_init_module not found",
-                               module_name);
-        goto fail;
-    }
+//     init = dlsym(hd, "js_init_module");
+//     if (!init) {
+//         JS_ThrowReferenceError(ctx, "could not load module filename '%s': js_init_module not found",
+//                                module_name);
+//         goto fail;
+//     }
 
-    m = init(ctx, module_name);
-    if (!m) {
-        JS_ThrowReferenceError(ctx, "could not load module filename '%s': initialization error",
-                               module_name);
-    fail:
-        if (hd)
-            dlclose(hd);
-        return NULL;
-    }
-    return m;
-}
+//     m = init(ctx, module_name);
+//     if (!m) {
+//         JS_ThrowReferenceError(ctx, "could not load module filename '%s': initialization error",
+//                                module_name);
+//     fail:
+//         if (hd)
+//             dlclose(hd);
+//         return NULL;
+//     }
+//     return m;
+// }
 #endif /* !_WIN32 */
 
 int js_module_set_import_meta(JSContext *ctx, JSValueConst func_val,
