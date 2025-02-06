@@ -45,6 +45,7 @@
 //#include <dlfcn.h>
 
 #include "termios.h"
+#include <sys/types.h>
 //#include <sys/ioctl.h>
 #include <sys/wait.h>
 
