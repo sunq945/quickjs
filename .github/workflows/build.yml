@@ -56,8 +56,10 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1    
       with:
-          tag_name: QJSLIB_${{ env.GITDATE }}
-          name: QJSLIB_${{ env.GITDATE }}
+          tag_name: libquickjs-${{ env.CURRENT_DATE }}
+          name: libquickjs-${{ env.CURRENT_DATE }}
+          body: "Release details"          
+          id: create_release
           draft: false
           prerelease: false
           make_latest: true
