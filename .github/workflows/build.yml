@@ -41,6 +41,7 @@ jobs:
         submodules: true
     - name: Build
       run: |
+          IDF_PATH=~/esp/xtensa-esp-elf/bin/
           export CROSS_PREFIX=${IDF_PATH}/xtensa-esp32-elf-
           export __STDC_NO_ATOMICS__=1
           make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y CONFIG_UBSAN=y
