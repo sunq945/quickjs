@@ -21,7 +21,7 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc g++ python3-pip
+        sudo apt-get install git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
         pip3 install -r requirements.txt  # 安装 QuickJS 编译的依赖
 
     - name: Compile QuickJS for ESP32-S3
@@ -32,11 +32,11 @@ jobs:
     - name: Package static library
       run: |
         mkdir -p build_output
-        cp path_to_quickjs_lib/libquickjs.a build_output/quickjs.a  # 复制静态链接库到输出文件夹
+        cp path_to_quickjs_lib/libquickjs.a build_output/libquickjs.a  # 复制静态链接库到输出文件夹
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        files: build_output/quickjs.a  # 指定需要发布的文件
+        files: build_output/libquickjs.a # 指定需要发布的文件
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub token 来创建 release
