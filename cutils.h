@@ -29,8 +29,6 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define CONFIG_VERSION "2024-02-14"
-
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #define force_inline inline __attribute__((always_inline))
