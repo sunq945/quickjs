@@ -43,8 +43,9 @@
 #include <utime.h>
 #else
 //#include <dlfcn.h>
-//#include "termios.h"
-#include "sys/ioctl.h"
+
+#include <termios.h>
+//#include <sys/ioctl.h>
 #include <sys/wait.h>
 
 #if defined(__FreeBSD__)
@@ -1739,27 +1740,27 @@ static JSValue js_os_ttySetRaw(JSContext *ctx, JSValueConst this_val,
     return JS_UNDEFINED;
 }
 #else
-static JSValue js_os_ttyGetWinSize(JSContext *ctx, JSValueConst this_val,
-                                   int argc, JSValueConst *argv)
-{
-    int fd;
-    struct winsize ws;
-    JSValue obj;
+// static JSValue js_os_ttyGetWinSize(JSContext *ctx, JSValueConst this_val,
+//                                    int argc, JSValueConst *argv)
+// {
+//     int fd;
+//     struct winsize ws;
+//     JSValue obj;
 
-    if (JS_ToInt32(ctx, &fd, argv[0]))
-        return JS_EXCEPTION;
-    if (ioctl(fd, TIOCGWINSZ, &ws) == 0 &&
-        ws.ws_col >= 4 && ws.ws_row >= 4) {
-        obj = JS_NewArray(ctx);
-        if (JS_IsException(obj))
-            return obj;
-        JS_DefinePropertyValueUint32(ctx, obj, 0, JS_NewInt32(ctx, ws.ws_col), JS_PROP_C_W_E);
-        JS_DefinePropertyValueUint32(ctx, obj, 1, JS_NewInt32(ctx, ws.ws_row), JS_PROP_C_W_E);
-        return obj;
-    } else {
-        return JS_NULL;
-    }
-}
+//     if (JS_ToInt32(ctx, &fd, argv[0]))
+//         return JS_EXCEPTION;
+//     if (ioctl(fd, TIOCGWINSZ, &ws) == 0 &&
+//         ws.ws_col >= 4 && ws.ws_row >= 4) {
+//         obj = JS_NewArray(ctx);
+//         if (JS_IsException(obj))
+//             return obj;
+//         JS_DefinePropertyValueUint32(ctx, obj, 0, JS_NewInt32(ctx, ws.ws_col), JS_PROP_C_W_E);
+//         JS_DefinePropertyValueUint32(ctx, obj, 1, JS_NewInt32(ctx, ws.ws_row), JS_PROP_C_W_E);
+//         return obj;
+//     } else {
+//         return JS_NULL;
+//     }
+// }
 
 static struct termios oldtty;
 
@@ -3687,7 +3688,7 @@ static const JSCFunctionListEntry js_os_funcs[] = {
     JS_CFUNC_MAGIC_DEF("read", 4, js_os_read_write, 0 ),
     JS_CFUNC_MAGIC_DEF("write", 4, js_os_read_write, 1 ),
     JS_CFUNC_DEF("isatty", 1, js_os_isatty ),
-    JS_CFUNC_DEF("ttyGetWinSize", 1, js_os_ttyGetWinSize ),
+    //JS_CFUNC_DEF("ttyGetWinSize", 1, js_os_ttyGetWinSize ),
     JS_CFUNC_DEF("ttySetRaw", 1, js_os_ttySetRaw ),
     JS_CFUNC_DEF("remove", 1, js_os_remove ),
     JS_CFUNC_DEF("rename", 2, js_os_rename ),
