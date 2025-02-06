@@ -11,8 +11,8 @@ on:
       - '!examples/**'
       - '.github/workflows/build.yml'
   push:
-    tags:
-      - 'v*'  # 每次推送新的标签时触发构建（发布新版本）
+    branches:
+      - '*'
 
 jobs:
   build:
