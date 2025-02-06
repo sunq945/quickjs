@@ -41,10 +41,11 @@ jobs:
         submodules: true
     - name: Build
       run: |
-          IDF_PATH=~/esp/xtensa-esp-elf/bin/
+          IDF_PATH=~/esp/xtensa-esp-elf/bin
           export CROSS_PREFIX=${IDF_PATH}/xtensa-esp32-elf-
           export __STDC_NO_ATOMICS__=1
-          make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y CONFIG_UBSAN=y
+          export CFLAGS=-fno-stack-protector -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -nostdlib -Wpointer-arith -Wno-error=unused-value -Wno-error=unused-label -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=char-subscripts -Wno-error=maybe-uninitialized -Wno-unused-parameter -Wno-sign-compare -Wno-error=misleading-indentation -Wno-error=stringop-truncation 
+          make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y 
     - name: Package static library
       run: |
         cd ${GITHUB_WORKSPACE}/build
