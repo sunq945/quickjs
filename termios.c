@@ -39,4 +39,3 @@ int cfsetospeed(struct termios *p, speed_t sp)
     }
 }
 
-#endif // CONFIG_VFS_SUPPORT_TERMIOS
