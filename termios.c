@@ -4,11 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "sdkconfig.h"
-
-#ifdef CONFIG_VFS_SUPPORT_TERMIOS
-
-#include <sys/termios.h>
+#include "termios.h"
 #include <sys/errno.h>
 
 speed_t cfgetispeed(const struct termios *p)
