@@ -7,7 +7,16 @@ on:
   push:
     branches:
       - '*'
-
+  workflow_dispatch:
+    inputs:
+      tag_date:
+        description: 'tag date'     
+        required: true
+      is_build_for_ohos:
+        description: 'Build for harmony platform'
+        type: boolean
+        default: true
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest  # 使用 Ubuntu 系统来运行构建
