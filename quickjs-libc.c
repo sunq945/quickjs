@@ -43,7 +43,9 @@
 #include <utime.h>
 #else
 //#include <dlfcn.h>
+#define __linux__
 #include <termios.h>
+#undef __linux__
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 
