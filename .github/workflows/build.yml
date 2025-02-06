@@ -34,6 +34,7 @@ jobs:
         curl -L "$download_url" -o xtensa-esp-elf-x86_64-linux-gnu.tar.gz
         tar -xzf xtensa-esp-elf-x86_64-linux-gnu.tar.gz
         IDF_PATH=~/esp/xtensa-esp-elf/bin/
+        export ${IDF_PATH}
 
     - uses: actions/checkout@v4
       with:
