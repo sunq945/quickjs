@@ -1,0 +1,42 @@
+name: Build ESP32-S3 QuickJS Static Library
+
+on:
+  push:
+    tags:
+      - 'v*'  # 每次推送新的标签时触发构建（发布新版本）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用 Ubuntu 系统来运行构建
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up ESP-IDF
+      uses: espressif/setup-esp-idf@v1
+      with:
+        idf_version: 'v4.4.3'  # 设置 ESP-IDF 版本，可以根据需要调整
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc g++ python3-pip
+        pip3 install -r requirements.txt  # 安装 QuickJS 编译的依赖
+
+    - name: Compile QuickJS for ESP32-S3
+      run: |
+        cd path_to_your_quickjs  # 进入 QuickJS 源码目录
+        make esp32s3  # 运行 QuickJS 编译命令，这里假设你有适配 ESP32-S3 的 makefile
+
+    - name: Package static library
+      run: |
+        mkdir -p build_output
+        cp path_to_quickjs_lib/libquickjs.a build_output/quickjs.a  # 复制静态链接库到输出文件夹
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build_output/quickjs.a  # 指定需要发布的文件
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub token 来创建 release
