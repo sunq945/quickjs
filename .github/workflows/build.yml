@@ -69,4 +69,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: quickjs-esp32s3-static-library.tar.gz
-        tag_name: ${{ env.GITDATE }}
+        tag_name: ${{ steps.bump.outputs.new_tag }}
