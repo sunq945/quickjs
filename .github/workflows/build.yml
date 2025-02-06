@@ -53,10 +53,10 @@ jobs:
     - name: Create GitHub Release
       id: create_release
       uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/') 
+
       with:
-          tag_name: qjslib_${{ github.event.inputs.tag_date }}
-          name: qjslib_${{ github.event.inputs.tag_date }}
+          tag_name: qjslib_${{ github.ref }}
+          name: qjslib_${{ github.ref }}
           draft: false
           prerelease: false
           make_latest: true
