@@ -43377,13 +43377,17 @@ static int getTimezoneOffset(int64_t time) {
     /* XXX: TODO */
     return 0;
 #else
-    {
-        struct tm tm;
-        localtime_r(&ti, &tm);
-        res = -tm.tm_gmtoff / 60;
-    }
+    // {
+    //     struct tm tm;
+    //     localtime_r(&ti, &tm);
+    //     res = -tm.tm_gmtoff / 60;
+    // }
 #endif
-    return res;
+    // return res;
+}
+
+void setTimezoneOffset(int minute) {
+    timezone_offset = minute ; 
 }
 
 #if 0
