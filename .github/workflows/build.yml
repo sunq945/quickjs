@@ -21,7 +21,6 @@ jobs:
         cd ~/esp/
         release_info=$(curl -s https://api.github.com/repos/espressif/crosstool-NG/releases/latest)
         tag_name=$(echo "$release_info" | jq -r '.tag_name')
-        #tag_name="esp-14.2.0_20241119"
         ESP_GNU_TOOLCHAIN_VER=$(echo "${tag_name#*-}"  )
         download_url="https://github.com/espressif/crosstool-NG/releases/download/esp-${ESP_GNU_TOOLCHAIN_VER}/xtensa-esp-elf-${ESP_GNU_TOOLCHAIN_VER}-x86_64-linux-gnu.tar.gz"
         echo ${download_url}
@@ -37,8 +36,8 @@ jobs:
       run: |
           IDF_PATH=~/esp/xtensa-esp-elf/bin
           export CROSS_PREFIX=${IDF_PATH}/xtensa-esp32-elf-
-          export CONFIG_VERSION=$(cat VERSION) 
-          echo CONFIG_VERSION='${CONFIG_VERSION}'
+          export CONFIG_VERSION='$(cat VERSION)'
+          echo CONFIG_VERSION=${CONFIG_VERSION}
           #make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y CFLAGS="-D__STDC_NO_ATOMICS__=1 -fno-stack-protector -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -nostdlib -Wpointer-arith -Wno-error=unused-value -Wno-error=unused-label -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=char-subscripts -Wno-error=maybe-uninitialized -Wno-unused-parameter -Wno-sign-compare -Wno-error=misleading-indentation -Wno-error=stringop-truncation"
           make -j$(getconf _NPROCESSORS_ONLN) CONFIG_VERSION='$(cat VERSION)'  CFLAGS="-D__STDC_NO_ATOMICS__=1 -fno-stack-protector -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -nostdlib -Wpointer-arith -Wno-error=unused-value -Wno-error=unused-label -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=char-subscripts -Wno-error=maybe-uninitialized -Wno-unused-parameter -Wno-sign-compare -Wno-error=misleading-indentation -Wno-error=stringop-truncation -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-discarded-qualifiers -Wno-int-conversion -Wno-error=maybe-uninitialized -Wno-pointer-arith -Wno-cast-function-type"
     - name: Package static library
