@@ -46,9 +46,14 @@ jobs:
         tar -czf quickjs-esp32s3-static-library.tar.gz libquickjs.a
         echo "Static library created"
 
+    - name: Create Git tag
+      run: |
+        git tag -a v1.0.0 -m "Release v1.0.0"
+        git push origin v1.0.0
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: quickjs-esp32s3-static-library.tar.gz # 指定需要发布的文件
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub token 来创建 release        
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub token 来创建 release  
