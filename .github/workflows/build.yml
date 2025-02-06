@@ -27,7 +27,7 @@ jobs:
         cd ~/esp
         git clone -b v5.4 --recursive https://github.com/espressif/esp-idf.git
         cd ~/esp/esp-idf
-        ./install.sh all
+        ./install.sh esp32s3
         . $HOME/esp/esp-idf/export.sh
         alias get_idf='. $HOME/esp/esp-idf/export.sh'
         source ~/.bashrc
@@ -37,7 +37,9 @@ jobs:
         submodules: true
     - name: Build
       run: |
-          make -j$(getconf _NPROCESSORS_ONLN)  CROSS_PREFIX=xtensa-esp32-elf- -D__STDC_NO_ATOMICS__=1 CONFIG_WERROR=y CONFIG_UBSAN=y
+          export CROSS_PREFIX=xtensa-esp32-elf-
+          export __STDC_NO_ATOMICS__=1
+          make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y CONFIG_UBSAN=y
     - name: Package static library
       run: |
         cd ${GITHUB_WORKSPACE}/build
