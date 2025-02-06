@@ -3,12 +3,6 @@ name: Build ESP32-S3 QuickJS Static Library
 on:
   pull_request:
     paths:
-      - '**'
-      - '!.gitignore'
-      - '!LICENSE'
-      - '!TODO'
-      - '!doc/**'
-      - '!examples/**'
       - '.github/workflows/build.yml'
   push:
     branches:
