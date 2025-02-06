@@ -251,8 +251,6 @@ qjs$(EXE): $(QJS_OBJS)
 qjs-debug$(EXE): $(patsubst %.o, %.debug.o, $(QJS_OBJS))
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-qjsc$(EXE): $(OBJDIR)/qjsc.o $(QJS_LIB_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 fuzz_eval: $(OBJDIR)/fuzz_eval.o $(OBJDIR)/fuzz_common.o libquickjs.fuzz.a
 	$(CC) $(CFLAGS_OPT) $^ -o fuzz_eval $(LIB_FUZZING_ENGINE)
@@ -267,20 +265,7 @@ libfuzzer: fuzz_eval fuzz_compile fuzz_regexp
 
 ifneq ($(CROSS_PREFIX),)
 
-$(QJSC): $(OBJDIR)/qjsc.host.o \
-    $(patsubst %.o, %.host.o, $(QJS_LIB_OBJS))
-	$(HOST_CC) $(LDFLAGS) -o $@ $^ $(HOST_LIBS)
-
 endif #CROSS_PREFIX
-
-QJSC_DEFINES:=-DCONFIG_CC=\"$(QJSC_CC)\" -DCONFIG_PREFIX=\"$(PREFIX)\"
-ifdef CONFIG_LTO
-QJSC_DEFINES+=-DCONFIG_LTO
-endif
-QJSC_HOST_DEFINES:=-DCONFIG_CC=\"$(HOST_CC)\" -DCONFIG_PREFIX=\"$(PREFIX)\"
-
-$(OBJDIR)/qjsc.o: CFLAGS+=$(QJSC_DEFINES)
-$(OBJDIR)/qjsc.host.o: CFLAGS+=$(QJSC_HOST_DEFINES)
 
 qjs32: $(patsubst %.o, %.m32.o, $(QJS_OBJS))
 	$(CC) -m32 $(LDFLAGS) $(LDEXPORT) -o $@ $^ $(LIBS)
@@ -288,9 +273,6 @@ qjs32: $(patsubst %.o, %.m32.o, $(QJS_OBJS))
 qjs32_s: $(patsubst %.o, %.m32s.o, $(QJS_OBJS))
 	$(CC) -m32 $(LDFLAGS) -o $@ $^ $(LIBS)
 	@size $@
-
-qjscalc: qjs
-	ln -sf $< $@
 
 ifdef CONFIG_LTO
 LTOEXT=.lto
@@ -308,12 +290,6 @@ endif # CONFIG_LTO
 
 libquickjs.fuzz.a: $(patsubst %.o, %.fuzz.o, $(QJS_LIB_OBJS))
 	$(AR) rcs $@ $^
-
-repl.c: $(QJSC) repl.js
-	$(QJSC) -c -o $@ -m repl.js
-
-qjscalc.c: $(QJSC) qjscalc.js
-	$(QJSC) -fbignum -c -o $@ qjscalc.js
 
 ifneq ($(wildcard unicode/UnicodeData.txt),)
 $(OBJDIR)/libunicode.o $(OBJDIR)/libunicode.m32.o $(OBJDIR)/libunicode.m32s.o \
@@ -381,9 +357,6 @@ clean:
 
 install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
-	$(STRIP) qjs$(EXE) qjsc$(EXE)
-	install -m755 qjs$(EXE) qjsc$(EXE) "$(DESTDIR)$(PREFIX)/bin"
-	ln -sf qjs$(EXE) "$(DESTDIR)$(PREFIX)/bin/qjscalc$(EXE)"
 	mkdir -p "$(DESTDIR)$(PREFIX)/lib/quickjs"
 	install -m644 libquickjs.a "$(DESTDIR)$(PREFIX)/lib/quickjs"
 ifdef CONFIG_LTO
