@@ -40,12 +40,13 @@ jobs:
           make -j$(getconf _NPROCESSORS_ONLN)  CROSS_PREFIX=xtensa-esp32-elf- -D__STDC_NO_ATOMICS__=1 CONFIG_WERROR=y CONFIG_UBSAN=y
     - name: Package static library
       run: |
-        mkdir -p build_output
-        cp path_to_quickjs_lib/libquickjs.a build_output/libquickjs.a  # 复制静态链接库到输出文件夹
+        cd ${GITHUB_WORKSPACE}/build
+        tar -czf quickjs-esp32s3-static-library.tar.gz libquickjs.a
+        echo "Static library created"
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        files: build_output/libquickjs.a # 指定需要发布的文件
+        files: quickjs-esp32s3-static-library.tar.gz # 指定需要发布的文件
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub token 来创建 release
