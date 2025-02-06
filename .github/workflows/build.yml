@@ -31,13 +31,14 @@ jobs:
         . $HOME/esp/esp-idf/export.sh
         alias get_idf='. $HOME/esp/esp-idf/export.sh'
         source ~/.bashrc
+        echo ${IDF_PATH}
         
     - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Build
       run: |
-          export CROSS_PREFIX=xtensa-esp32-elf-
+          export CROSS_PREFIX=${IDF_PATH}/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32-elf-
           export __STDC_NO_ATOMICS__=1
           make -j$(getconf _NPROCESSORS_ONLN) CONFIG_WERROR=y CONFIG_UBSAN=y
     - name: Package static library
