@@ -48,11 +48,11 @@ jobs:
     - name: Set Git user
       run: |
         git config --global user.email "sqshining8964@gmail.com"
-        git config user.name "GitHub Action"
+        git config user.name "sunq945"
            
     - name: Create Git tag
       run: |
-        git tag -a v1.0.0 -m "Release v1.0.0"
+        #git tag -a v1.0.0 -m "Release v1.0.0"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         git push origin v1.0.0  # 推送标签到远程仓库
 
