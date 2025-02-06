@@ -1,9 +1,6 @@
 name: Build ESP32-S3 QuickJS Static Library
 
-on:
-  pull_request:
-    paths:
-      - '.github/workflows/build.yml'
+on: 
   push:
   workflow_dispatch:
     inputs:
@@ -57,8 +54,8 @@ jobs:
       id: create_release
       uses: softprops/action-gh-release@v1    
       with:
-          tag_name: libquickjs-${{ env.CURRENT_DATE }}
-          name: libquickjs-${{ env.CURRENT_DATE }}
+          tag_name: qjslib_${{ github.event.inputs.tag_date }}
+          name: qjslib_${{ github.event.inputs.tag_date }}
           draft: false
           prerelease: false
           make_latest: true
