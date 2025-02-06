@@ -29,7 +29,7 @@ jobs:
         IDF_PATH=~/esp/xtensa-esp-elf/bin/
         export IDF_PATH
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v1.0.0
       with:
         submodules: false
     - name: Build
