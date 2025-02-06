@@ -1,0 +1,65 @@
+name: Build ESP32-S3 QuickJS Static Library
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build.yml'
+  push:
+  workflow_dispatch:
+    inputs:
+      tag_date:
+        description: 'tag date'     
+        required: true
+      is_build_for_ohos:
+        description: 'Build for harmony platform'
+        type: boolean
+        default: true
+        required: false
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用 Ubuntu 系统来运行构建
+
+    steps:
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install jq git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+        mkdir -p ~/esp
+        cd ~/esp/
+        release_info=$(curl -s https://api.github.com/repos/espressif/crosstool-NG/releases/latest)
+        tag_name=$(echo "$release_info" | jq -r '.tag_name')
+        ESP_GNU_TOOLCHAIN_VER=$(echo "${tag_name#*-}"  )
+        download_url="https://github.com/espressif/crosstool-NG/releases/download/esp-${ESP_GNU_TOOLCHAIN_VER}/xtensa-esp-elf-${ESP_GNU_TOOLCHAIN_VER}-x86_64-linux-gnu.tar.gz"
+        echo ${download_url}
+        curl -L "$download_url" -o xtensa-esp-elf-x86_64-linux-gnu.tar.gz
+        tar -xzf xtensa-esp-elf-x86_64-linux-gnu.tar.gz
+        IDF_PATH=~/esp/xtensa-esp-elf/bin/
+        export IDF_PATH
+
+    - uses: actions/checkout@v1.0.0
+      with:
+        submodules: false
+    - name: Build
+      run: |
+          IDF_PATH=~/esp/xtensa-esp-elf/bin
+          export CROSS_PREFIX=${IDF_PATH}/xtensa-esp32-elf-
+          VERSION=$(cat VERSION)
+          #echo ${CONFIG_VERSION}
+          #make -j$(getconf _NPROCESSORS_ONLN)   CFLAGS="-DCONFIG_VERSION=\"2024-02-14\" -D__STDC_NO_ATOMICS__=1 -std=c99 -fno-stack-protector -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -nostdlib -Wpointer-arith -Wno-error=unused-value -Wno-error=unused-label -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=char-subscripts -Wno-error=maybe-uninitialized -Wno-unused-parameter -Wno-sign-compare -Wno-error=misleading-indentation -Wno-error=stringop-truncation -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-discarded-qualifiers -Wno-int-conversion -Wno-error=maybe-uninitialized -Wno-pointer-arith -Wno-cast-function-type"
+          make -j$(getconf _NPROCESSORS_ONLN)  CFLAGS="-D__STDC_NO_ATOMICS__=1 -std=c99 -fno-stack-protector -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -nostdlib -Wpointer-arith -Wno-error=unused-value -Wno-error=unused-label -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=char-subscripts -Wno-error=maybe-uninitialized -Wno-unused-parameter -Wno-sign-compare -Wno-error=misleading-indentation -Wno-error=stringop-truncation -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-discarded-qualifiers -Wno-int-conversion -Wno-error=maybe-uninitialized -Wno-pointer-arith -Wno-cast-function-type"
+    - name: Package static library
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar -czf quickjs-esp32s3-static-library.tar.gz libquickjs.a
+        echo "Static library created"
+         
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1    
+      with:
+          tag_name: qjslib_${{ github.event.inputs.tag_date }}
+          name: qjslib_${{ github.event.inputs.tag_date }}
+          draft: false
+          prerelease: false
+          make_latest: true
+          files: ./quickjs-esp32s3-static-library.tar.gz
